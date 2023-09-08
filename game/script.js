@@ -10,7 +10,7 @@ const blocksElem = document.querySelector(".blocks");
 
 // Global variables
 let blockItemSide = 0;
-let score = 0;
+const score = 0;
 
 // Data retrived from local storage
 const gridSize = localStorage.getItem("grid");
@@ -159,14 +159,11 @@ function createBlockElems(block, resultMatrix) {
 }
 
 function nestedArrayToMatrix(nestedArray) {
-  // No of rows and columns based on the nested array
   const rows = nestedArray.length;
   const columns = Math.max(...nestedArray.map((row) => row.length));
 
-  // A new matrix with zeros
   const matrix = Array.from({ length: rows }, () => Array(columns).fill(0));
 
-  // Copy values from the nested array to the matrix
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < nestedArray[i].length; j++) {
       matrix[i][j] = nestedArray[i][j];

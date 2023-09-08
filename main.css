@@ -77,3 +77,66 @@ main h1 {
 .pointer:hover {
     cursor: pointer;
 }
+
+.settings {
+    display: none;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    background: rgb(0, 0, 0, 0.5);
+}
+
+.menu {
+    background: #060B5D;
+    gap: 1rem;
+    color: var(--White);
+    box-shadow: 0px 0px 30px 0px rgba(134, 172, 255, 0.35) inset;
+    padding: 2rem;
+    justify-content: flex-start;
+    min-height: 40%;
+    position: relative;
+    max-width: 24rem;
+    width: 100%;
+}
+
+.menu a:hover {
+    text-decoration: underline;
+}
+
+.menu-close {
+    position: absolute;
+    right: 2.25rem;
+    top: 2.1rem;
+    height: 1.25rem;
+}
+
+.menu-header {
+    text-align: center;
+    text-shadow: 0px 0px 15px rgba(68, 176, 40, 0.50);
+    font-family: Migra;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.menu-item {
+    gap: 1rem;
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.25);
+    font-family: 'Karla', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    align-items: center;
+    width: 100%;
+    color: var(--White);
+    text-decoration: none;
+}
+
+.menu-item img {
+    border: 3px solid #dfecff;
+    background: #277FFD;
+    box-shadow: 0px 0px 15px 0px rgba(255, 255, 255, 0.50) inset;
+    height: 3rem;
+    padding: 0.4rem;
+}

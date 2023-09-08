@@ -9,11 +9,9 @@ settingsBtn.addEventListener("click", (event) => {
   settingsElem.style.display = "flex";
 });
 
-settingsClose.addEventListener("click", (event) => {
-  settingsElem.style.display = "none";
-});
+settingsClose.addEventListener("click", () => hideSettings());
 
-playBtn.addEventListener("click", (event) => {
+playBtn.addEventListener("click", () => {
   localStorage.setItem("grid", difficultyMenu.value);
   window.location.href = "./game/index.html";
 });
@@ -22,17 +20,12 @@ playBtn.addEventListener("click", (event) => {
 document.addEventListener("click", (event) => {
   const target = event.target;
 
-  if (settingsElem && !target.classList.contains("menu")) {
-    let parent = target.parentElement;
-
-    while (parent) {
-      // If parent has the class "menu," so don't close the settings.
-      if (parent.classList.contains("menu")) return;
-      
-      parent = parent.parentElement;
-    }
-
-    // If no parent has the class "menu," hide the settings.
+  if (settingsElem && !target.closest(".menu")) {
+    // If the target or its ancestors do not have the class "menu," hide the settings.
     hideSettings();
   }
 });
+
+function hideSettings() {
+  settingsElem.style.display = "none";
+}
