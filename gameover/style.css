@@ -1,0 +1,43 @@
+main {
+    justify-content: center;
+    gap: 3rem;
+}
+
+main h1 {
+    margin: 0px;
+    font-size: 2.75rem;
+    background: rgba(0, 0, 0, 0.50);
+    box-shadow: -2px 4px 10px 0px #0B1C94;
+    padding: 0.3rem 0.5rem 0 0.5rem;
+    color: var(--Orange);
+}
+
+.userscore,
+.highscore {
+    text-align: center;
+}
+
+.userscore h2,
+.highscore h2 {
+    font-family: Migra;
+    text-transform: uppercase;
+    text-shadow: -2px 4px 10px rgba(255, 255, 255, 0.25);
+}
+
+.userscore span,
+.highscore span {
+    font-size: 2.25rem;
+    font-weight: 800;
+    text-shadow: -2px 4px 10px rgba(255, 255, 255, 0.125);
+}
+
+.playagain {
+    background: radial-gradient(202.78% 197.77% at 52.26% 50.94%, #44B028 0%, rgba(255, 255, 255, 0.00) 92.19%, #FFF 100%);
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: var(--White);
+    width: fit-content;
+    padding: 0.5rem 2rem;
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Block Puzzle</title>
+    <link rel="stylesheet" href="./main.css" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="flex-col">
+      <h1 class="flex-col">
+        <div class="block-logo">
+          <span>B</span>
+          <span>L</span>
+          <span>O</span>
+          <span>C</span>
+          <span>K</span>
+        </div>
+        Puzzle
+      </h1>
+      <div class="action">
+        <button class="btn-settings pointer">
+          <img src="./assets/icons/settings.svg" alt="" />
+        </button>
+        <button class="btn-play pointer">
+          <img src="./assets/icons/play_arrow.svg" alt="" />
+        </button>
+      </div>
+      <div class="footer">
+        <p class="flex-col">
+          Created By
+          <a
+            href="https://alwinsunil.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Alwin Sunil
+          </a>
+        </p>
+      </div>
+    </main>
+    <div class="settings flex-col flex-col-center">
+      <div class="menu flex-col flex-col-center">
+        <span class="menu-header">SETTINGS</span>
+        <img class="menu-close pointer" src="./assets/icons/close.svg" alt="" />
+        <span class="menu-item flex-row">
+          <img src="./assets/icons/difficulty.svg" alt="" /> Difficulty
+          <select class="difficulty pointer">
+            <option value="8" selected>8x8</option>
+            <option value="9">9x9</option>
+            <option value="10">10x10</option>
+          </select>
+        </span>
+        <a
+          class="menu-item flex-row"
+          href="https://github.com/AlwinSunil/block-puzzle"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="./assets/icons/github.svg" alt="" />
+          Github Repo
+        </a>
+      </div>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

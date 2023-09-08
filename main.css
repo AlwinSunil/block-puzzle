@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;700;800&display=swap');
+
+@font-face {
+    font-family: Migra;
+    src: url("./assets/migra-font.woff");
+}
+
+:root {
+    --White: #FFFFFF;
+    --Red: hsl(1, 82%, 53%);
+    --Orange: hsl(25, 100%, 56%);
+    --Yellow: hsl(42, 96%, 56%);
+    --Green: hsl(108, 63%, 42%);
+    --Blue: hsl(215, 98%, 57%);
+
+    --Red-Bright: hsl(1, 82%, 90%);
+    --Orange-Bright: hsl(25, 100%, 90%);
+    --Yellow-Bright: hsl(42, 96%, 90%);
+    --Green-Bright: hsl(108, 63%, 90%);
+    --Blue-Bright: hsl(215, 98%, 90%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "karla", sans-serif;
+    letter-spacing: -0.25px;
+}
+
+body {
+    font-family: "karla", sans-serif;
+    background: linear-gradient(179deg, #1030D8 -45%, #03023F 106%);
+    background-image: url("./assets/bg.svg");
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Game visuals is replicated from Block Puzzle by Candy Mobile, an andriod game available in playstore */
+/* https://play.google.com/store/apps/details?id=com.dxm.nopuzzle&pcampaignid=web_share */
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-col-center {
+    align-items: center;
+    justify-content: center;
+}
+
+main {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    justify-content: space-around;
+}
+
+main {
+    color: var(--White)
+}
+
+main h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-top: 3rem;
+    font-family: Migra, sans-serif;
+}
+
+.pointer:hover {
+    cursor: pointer;
+}

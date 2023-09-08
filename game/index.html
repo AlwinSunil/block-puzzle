@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game - Block Puzzle</title>
+    <link rel="stylesheet" href="../main.css" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="intro flex-row">
+      <div class="instructions">
+        <h2>Instructions:</h2>
+        <ul>
+          <li>Fill the grid with blocks.</li>
+          <li>Score points for complete rows or columns.</li>
+          <li>Continue until the grid is full.</li>
+          <li>If the blocks don't have enough space, game is over.</li>
+        </ul>
+      </div>
+      <form class="user flex-col" id="userdetails">
+        <label for="username">Enter Player name</label>
+        <input type="text" name="username" id="username" />
+        <label for="nickname">Enter Nickname</label>
+        <input type="text" name="nickname" id="nickname" />
+        <input class="pointer" type="submit" value="GO" />
+      </form>
+    </div>
+    <main class="game flex-col">
+      <div class="header">
+        <div class="highscore">
+          <span class="highscore-icon">🏆</span
+          ><span class="highscore-value">590</span>
+        </div>
+        <div class="userscore flex-row">
+          <span class="userscore-title">Score</span>
+          <span class="userscore-value">100</span>
+        </div>
+        <div class="pause-btn pointer">
+          <img src="../assets/icons/pause.svg" alt="" />
+        </div>
+      </div>
+      <div class="canvas"></div>
+      <div class="blocks"></div>
+    </main>
+    <div class="pause flex-col flex-col-center">
+      <div class="menu flex-col flex-col-center">
+        <span class="menu-header">SETTINGS</span>
+        <img
+          class="menu-close pointer"
+          src="../assets/icons/close.svg"
+          alt=""
+        />
+        <span class="menu-item flex-row restart pointer">
+          <img src="../assets/icons/music.svg" alt="" /> Restart
+        </span>
+        <span class="menu-item flex-row sound pointer">
+          <img src="../assets/icons/restart.svg" alt="" /> Sound
+          <input type="checkbox" name="" id="" />
+        </span>
+        <a
+          class="menu-item flex-row"
+          href="https://github.com/AlwinSunil/block-puzzle"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="../assets/icons/github.svg" alt="" />
+          Github Repo
+        </a>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

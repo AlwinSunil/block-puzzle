@@ -1,0 +1,177 @@
+main h1 span {
+    font-size: 4rem;
+    text-transform: uppercase;
+    font-family: Migra, sans-serif;
+}
+
+.block-logo {
+    display: flex;
+    background: rgba(0, 0, 0, 0.50);
+    width: fit-content;
+    padding: 0 0.5rem;
+    height: 4.5rem;
+}
+
+.block-logo span:first-child {
+    color: var(--Red);
+}
+
+.block-logo span:nth-child(2) {
+    color: var(--Orange);
+}
+
+.block-logo span:nth-child(3) {
+    color: var(--Yellow);
+}
+
+.block-logo span:nth-child(4) {
+    color: var(--Green);
+}
+
+.block-logo span:nth-child(5) {
+    color: var(--Blue);
+}
+
+.action {
+    display: flex;
+    gap: 2rem;
+}
+
+.action button {
+    padding: 0.5rem 3rem;
+    border: 3px solid var(--White);
+    text-align: center;
+}
+
+.action button img {
+    height: 1.75rem;
+}
+
+.btn-settings {
+    background: radial-gradient(228.39% 153.56% at 52.26% 50.94%, #FFC700 0%, rgba(255, 255, 255, 0.80) 99.99%);
+    stroke-width: 3px;
+    stroke: #FFD465;
+}
+
+.btn-play {
+    background: radial-gradient(228.39% 153.56% at 52.26% 50.94%, #0066FF 0%, rgba(135, 183, 255, 0.539062) 92.1875%, rgba(184, 212, 255, 0.5) 100%), linear-gradient(180deg, white 0%, #77BEFF 100%);
+    stroke-width: 3px;
+    stroke: #0066FF;
+}
+
+.btn-play img:last-child {
+    padding: 0.1rem;
+}
+
+.footer {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.footer p {
+    font-size: 1rem;
+    font-family: Migra, sans-serif;
+}
+
+.footer a {
+    font-family: Migra, sans-serif;
+    text-transform: none;
+    font-size: 1.5rem;
+    text-decoration: underline;
+    color: var(--White);
+}
+
+.settings {
+    display: none;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    background: rgb(0, 0, 0, 0.5);
+}
+
+.menu {
+    background: #060B5D;
+    gap: 1rem;
+    color: var(--White);
+    box-shadow: 0px 0px 30px 0px rgba(134, 172, 255, 0.35) inset;
+    padding: 2rem;
+    justify-content: flex-start;
+    min-height: 40%;
+    position: relative;
+    max-width: 24rem;
+    width: 100%;
+}
+
+.menu-header {
+    text-align: center;
+    text-shadow: 0px 0px 15px rgba(68, 176, 40, 0.50);
+    font-family: Migra;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.menu-close {
+    position: absolute;
+    right: 2.25rem;
+    top: 2.1rem;
+    height: 1.25rem;
+}
+
+.menu-item {
+    gap: 1rem;
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.25);
+    font-family: 'Karla', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    align-items: center;
+    width: 100%;
+    color: var(--White);
+    text-decoration: none;
+}
+
+.menu a:hover {
+    text-decoration: underline;
+}
+
+.menu-item img {
+    border: 3px solid #dfecff;
+    background: #277FFD;
+    box-shadow: 0px 0px 15px 0px rgba(255, 255, 255, 0.50) inset;
+    height: 3rem;
+    padding: 0.4rem;
+}
+
+select {
+    width: 5rem;
+    position: relative;
+    padding: 0.5rem;
+    border: 2px solid #FFF;
+    background: #0047AE;
+    box-shadow: 0px 0px 15px 0px rgba(255, 255, 255, 0.50) inset;
+    color: var(--White);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: auto;
+}
+
+select:focus {
+    outline: none;
+}
+
+@media screen and (max-width:512px) {
+    .action {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .menu {
+        padding: 2rem;
+        margin: 2rem;
+        width: auto;
+    }
+}
