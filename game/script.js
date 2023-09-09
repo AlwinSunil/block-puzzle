@@ -1,42 +1,16 @@
 const userDetailsForm = document.querySelector("#userdetails");
 const usernameInput = document.querySelector("#username");
 const nicknameInput = document.querySelector("#nickname");
-const highScoreElem = document.querySelector(".highscore-value");
 const infoPage = document.querySelector(".intro");
 const gamePage = document.querySelector(".game");
-const scoreValue = document.querySelector(".userscore-value");
-const canvas = document.querySelector(".canvas");
 const blocksElem = document.querySelector(".blocks");
+const scoreValue = document.querySelector(".userscore-value");
 
 // Global variables
 let blockItemSide = 0;
 const score = 0;
 
-// Data retrived from local storage
-const gridSize = localStorage.getItem("grid");
-const highScore = localStorage.getItem("highscore");
-
-// Updating highscore on UI
-highScoreElem.innerText = highScore;
 scoreValue.innerText = score;
-
-const pauseElem = document.querySelector(".pause");
-const pauseBtn = document.querySelector(".pause-btn");
-const pauseMenuClose = document.querySelector(".menu-close");
-const restartBtn = document.querySelector(".restart");
-
-pauseBtn.addEventListener("click", (event) => {
-  event.stopPropagation();
-  pauseElem.style.display = "flex";
-});
-
-pauseMenuClose.addEventListener("click", (event) => {
-  pauseElem.style.display = "none";
-});
-
-restartBtn.addEventListener("click", (event) => {
-  window.location.reload();
-});
 
 const blockShape = [
   [[1]],
@@ -59,45 +33,10 @@ const blockShape = [
   ],
 ];
 
-setCanvasGrid();
-generateCanvasItem();
-
-// Event Listeners
-window.addEventListener("resize", getCanvasItemWidth);
-
 userDetailsForm.onsubmit = function (event) {
   event.preventDefault();
   handleUserDetailsFormSubmit();
 };
-
-// Functions
-
-function setCanvasGrid() {
-  canvas.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  canvas.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
-}
-
-function generateCanvasItem() {
-  for (let i = 1; i < gridSize * gridSize + 1; i++) {
-    const element = document.createElement("div");
-    element.classList.add("canvas-item");
-    element.id = `canvas-item-${i}`;
-    canvas.appendChild(element);
-  }
-}
-
-function getCanvasItemWidth() {
-  // Convert the NodeList to an array
-  let blockItemElem = document.getElementsByClassName("block-item");
-  blockItemElem = Array.from(blockItemElem);
-
-  const canvasItem = document.querySelector(".canvas-item");
-  blockItemSide = canvasItem.offsetWidth;
-  blockItemElem.forEach(function (element) {
-    element.style.width = `${blockItemSide}px`;
-    element.style.height = `${blockItemSide}px`;
-  });
-}
 
 function handleUserDetailsFormSubmit() {
   const username = usernameInput.value.trim();
@@ -114,7 +53,7 @@ function startGame() {
   infoPage.remove();
   gamePage.style.display = "flex";
   generateBlock(blocksElem);
-  getCanvasItemWidth();
+  getCanvasItemWidth(); // Function definition in canvas.js
 }
 
 function getRandomInt(min, max) {
@@ -122,7 +61,15 @@ function getRandomInt(min, max) {
 }
 
 function generateBlock(blockElem) {
-  for (let i = 0; i < 3; i++) {
+  const previousBlocks = blockElem.querySelectorAll(".block");
+  previousBlocks.forEach((block) => {
+    block.remove();
+  });
+
+  for (let i = 1; i < 4; i++) {
+    const colors = ["Red", "Orange", "Yellow", "Green", "Blue"];
+    const colorIndex = getRandomInt(0, 4);
+
     const shapeIndex = getRandomInt(0, blockShape.length - 1);
 
     const resultMatrix = nestedArrayToMatrix(blockShape[shapeIndex]);
@@ -130,31 +77,12 @@ function generateBlock(blockElem) {
     const block = document.createElement("div");
     block.classList.add("block");
     block.classList.add("pointer");
+    block.id = `block-${i}`;
+    block.setAttribute("data-matrix", JSON.stringify(resultMatrix));
+    block.setAttribute("data-color", colors[colorIndex]);
     blockElem.appendChild(block);
 
-    createBlockElems(block, resultMatrix);
-  }
-}
-
-function createBlockElems(block, resultMatrix) {
-  const colors = ["Red", "Orange", "Yellow", "Green", "Blue"];
-  const colorIndex = getRandomInt(0, 4);
-
-  for (let row = 0; row < resultMatrix.length; row++) {
-    for (let col = 0; col < resultMatrix[row].length; col++) {
-      if (resultMatrix[row][col] === 1) {
-        const element = document.createElement("div");
-        element.classList.add("block-item");
-        element.style.borderWidth = "3px";
-        element.style.borderStyle = "solid";
-        element.style.boxShadow = "0px 0px 10px rgba(255, 255, 255, 0.25)";
-        element.style.backgroundColor = `var(--${colors[colorIndex]})`;
-        element.style.borderColor = `var(--${colors[colorIndex]}-Bright)`;
-        element.style.gridColumn = `${col + 1}`;
-        element.style.gridRow = `${row + 1}`;
-        block.appendChild(element);
-      }
-    }
+    createBlockElems(block, resultMatrix, colors[colorIndex]);
   }
 }
 
@@ -171,4 +99,155 @@ function nestedArrayToMatrix(nestedArray) {
   }
 
   return matrix;
+}
+
+function createBlockElems(block, resultMatrix, color) {
+  for (let row = 0; row < resultMatrix.length; row++) {
+    for (let col = 0; col < resultMatrix[row].length; col++) {
+      if (resultMatrix[row][col] === 1) {
+        const element = document.createElement("div");
+        element.classList.add("block-item");
+        element.style.borderWidth = "3px";
+        element.style.borderStyle = "solid";
+        element.style.boxShadow = "0px 0px 10px rgba(255, 255, 255, 0.25)";
+        element.style.backgroundColor = `var(--${color})`;
+        element.style.borderColor = `var(--${color}-Bright)`;
+        element.style.gridColumn = `${col + 1}`;
+        element.style.gridRow = `${row + 1}`;
+        block.appendChild(element);
+      }
+    }
+  }
+}
+
+let selectBlock;
+let dataMatrix;
+let blockColor;
+let prevSelectBlock = null;
+let sectionActive = false;
+
+const maxSelectedBlocks = 3;
+let selectedBlockCount = 0;
+
+blocksElem.addEventListener("click", (e) => {
+  const clickedBlock = e.target.parentElement;
+
+  if (selectBlock === clickedBlock) {
+    // If the same block is clicked twice, deselect it
+    selectBlock.style.transform = "scale(1)";
+    selectBlock = null;
+    selectedBlockCount--;
+  } else if (
+    clickedBlock &&
+    clickedBlock.classList.contains("block") &&
+    !sectionActive
+  ) {
+    selectBlock = clickedBlock;
+    dataMatrix = selectBlock.getAttribute("data-matrix");
+    blockColor = selectBlock.getAttribute("data-color");
+    selectBlock.style.transform = "scale(1.25)";
+    selectedBlockCount++;
+
+    if (prevSelectBlock !== null) {
+      prevSelectBlock.style.transform = "scale(1)";
+    }
+
+    prevSelectBlock = selectBlock;
+  }
+});
+
+canvas.addEventListener("click", () => {
+  if (selectBlock) selectBlock.style.transform = "scale(1)";
+  selectBlockActive = false;
+  selectBlock = null;
+});
+
+let matrix = trackCanvas();
+
+function trackCanvas() {
+  const matrix = Array.from({ length: 8 }, () => Array(8).fill(0));
+  const canvasItems = document.querySelectorAll(".canvas-item");
+
+  // Iterate through the canvas items
+  canvasItems.forEach((canvasItem, index) => {
+    if (canvasItem.classList.contains("active")) {
+      const row = Math.floor(index / 8);
+      const col = index % 8;
+      matrix[row][col] = 1;
+    }
+  });
+
+  return matrix;
+}
+
+canvas.addEventListener("click", (event) => {
+  const clickedElement = event.target;
+
+  if (clickedElement.classList.contains("canvas-item")) {
+    const index = Array.from(clickedElement.parentElement.children).indexOf(
+      clickedElement
+    );
+    const row = Math.floor(index / 8) + 1;
+    const col = (index % 8) + 1;
+
+    let position = [row - 1, col - 1];
+    console.log(position);
+
+    const updatedMatrix = updateMatrix(
+      matrix,
+      JSON.parse(dataMatrix),
+      position[0],
+      position[1]
+    );
+    console.log(updatedMatrix);
+    updateCanvas(updatedMatrix);
+
+    if (selectedBlockCount >= maxSelectedBlocks) {
+      // Generate another set of blocks when the maximum is reached
+      generateBlock(blocksElem);
+      getCanvasItemWidth();
+      selectedBlockCount = 0; // Reset the counter
+    }
+    matrix = trackCanvas();
+  }
+});
+
+function updateCanvas(matrix) {
+  const canvasItems = document.querySelectorAll(".canvas-item");
+
+  canvasItems.forEach((canvasItem, index) => {
+    if (matrix[Math.floor(index / 8)][index % 8] === 1) {
+      canvasItem.classList.add("active");
+      canvasItem.classList.add(blockColor);
+    } else {
+      canvasItem.classList.remove("active");
+      canvasItem.classList.remove(blockColor);
+    }
+  });
+}
+
+function updateMatrix(originalMatrix, subMatrix, row, col) {
+  const updatedMatrix = [];
+
+  for (let i = 0; i < originalMatrix.length; i++) {
+    updatedMatrix.push([...originalMatrix[i]]);
+  }
+
+  for (let i = 0; i < subMatrix.length; i++) {
+    for (let j = 0; j < subMatrix[i].length; j++) {
+      const newRow = row + i;
+      const newCol = col + j;
+
+      if (
+        newRow >= 0 &&
+        newRow < updatedMatrix.length &&
+        newCol >= 0 &&
+        newCol < updatedMatrix[0].length
+      ) {
+        updatedMatrix[newRow][newCol] = subMatrix[i][j];
+      }
+    }
+  }
+
+  return updatedMatrix;
 }
