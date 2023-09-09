@@ -191,7 +191,6 @@ canvas.addEventListener("click", (event) => {
     const col = (index % 8) + 1;
 
     let position = [row - 1, col - 1];
-    console.log(position);
 
     const updatedMatrix = updateMatrix(
       matrix,
@@ -199,7 +198,6 @@ canvas.addEventListener("click", (event) => {
       position[0],
       position[1]
     );
-    console.log(updatedMatrix);
     updateCanvas(updatedMatrix);
 
     if (selectedBlockCount >= maxSelectedBlocks) {
