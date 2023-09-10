@@ -6,16 +6,17 @@ const gamePage = document.querySelector(".game");
 const blocksElem = document.querySelector(".blocks");
 const scoreValue = document.querySelector(".userscore-value");
 
+const canvasItems = canvas.querySelectorAll(".canvas-item");
+
 // Global variables
 let blockItemSide = 0;
-const score = 0;
+let score = 0;
 
 scoreValue.innerText = score;
 
 const blockShape = [
   [[1]],
   [[1, 1]],
-  [[1], [1, 1]],
   [[1, 1], [1]],
   [[1, 1, 1], [1]],
   [[1, 1, 1]],
@@ -50,8 +51,9 @@ function handleUserDetailsFormSubmit() {
 }
 
 function startGame() {
-  infoPage.remove();
   gamePage.style.display = "flex";
+  infoPage.remove();
+
   generateBlock(blocksElem);
   getCanvasItemWidth(); // Function definition in canvas.js
 }
@@ -60,8 +62,32 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+let generatedBlockMatrices = [];
+
+function trackBlocks() {
+  let noOfBlockUsed = 0;
+
+  const blocks = Array.from(blocksElem.children);
+
+  blocks.forEach((blockItem, index) => {
+    if (blockItem.classList.contains("block-used")) {
+      generatedBlockMatrices.splice(index, 1);
+
+      noOfBlockUsed += 1;
+    }
+  });
+
+  if (noOfBlockUsed >= 3) {
+    blocks.forEach((element) => element.remove());
+    generatedBlockMatrices = [];
+    generateBlock(blocksElem);
+    noOfBlockUsed = 0;
+  }
+}
+
 function generateBlock(blockElem) {
   const previousBlocks = blockElem.querySelectorAll(".block");
+
   previousBlocks.forEach((block) => {
     block.remove();
   });
@@ -72,11 +98,11 @@ function generateBlock(blockElem) {
 
     const shapeIndex = getRandomInt(0, blockShape.length - 1);
 
-    const resultMatrix = nestedArrayToMatrix(blockShape[shapeIndex]);
+    const resultMatrix = blockShape[shapeIndex];
+    generatedBlockMatrices.push(resultMatrix);
 
     const block = document.createElement("div");
     block.classList.add("block");
-    block.classList.add("pointer");
     block.id = `block-${i}`;
     block.setAttribute("data-matrix", JSON.stringify(resultMatrix));
     block.setAttribute("data-color", colors[colorIndex]);
@@ -84,21 +110,8 @@ function generateBlock(blockElem) {
 
     createBlockElems(block, resultMatrix, colors[colorIndex]);
   }
-}
 
-function nestedArrayToMatrix(nestedArray) {
-  const rows = nestedArray.length;
-  const columns = Math.max(...nestedArray.map((row) => row.length));
-
-  const matrix = Array.from({ length: rows }, () => Array(columns).fill(0));
-
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < nestedArray[i].length; j++) {
-      matrix[i][j] = nestedArray[i][j];
-    }
-  }
-
-  return matrix;
+  getCanvasItemWidth();
 }
 
 function createBlockElems(block, resultMatrix, color) {
@@ -120,132 +133,249 @@ function createBlockElems(block, resultMatrix, color) {
   }
 }
 
-let selectBlock;
-let dataMatrix;
-let blockColor;
-let prevSelectBlock = null;
-let sectionActive = false;
+blocksElem.addEventListener("click", handleBlockClick);
 
-const maxSelectedBlocks = 3;
-let selectedBlockCount = 0;
+let selectedBlock;
+let selectedMatrix;
+let selectedBlockColor;
 
-blocksElem.addEventListener("click", (e) => {
-  const clickedBlock = e.target.parentElement;
+function handleBlockClick(event) {
+  const clickedBlock = event.target.parentElement;
 
-  if (selectBlock === clickedBlock) {
-    // If the same block is clicked twice, deselect it
-    selectBlock.style.transform = "scale(1)";
-    selectBlock = null;
-    selectedBlockCount--;
-  } else if (
-    clickedBlock &&
-    clickedBlock.classList.contains("block") &&
-    !sectionActive
-  ) {
-    selectBlock = clickedBlock;
-    dataMatrix = selectBlock.getAttribute("data-matrix");
-    blockColor = selectBlock.getAttribute("data-color");
-    selectBlock.style.transform = "scale(1.25)";
-    selectedBlockCount++;
+  if (!clickedBlock.classList.contains("block")) return;
 
-    if (prevSelectBlock !== null) {
-      prevSelectBlock.style.transform = "scale(1)";
+  if (clickedBlock === selectedBlock) {
+    clickedBlock.classList.remove("block-active");
+    resetSelected();
+  } else {
+    if (selectedBlock) selectedBlock.classList.remove("block-active");
+
+    if (!clickedBlock.classList.contains("block-used")) {
+      selectedBlock = clickedBlock;
+      selectedBlock.classList.add("block-active");
+      selectedMatrix = JSON.parse(clickedBlock.getAttribute("data-matrix"));
+      selectedBlockColor = clickedBlock.getAttribute("data-color");
     }
-
-    prevSelectBlock = selectBlock;
   }
-});
-
-canvas.addEventListener("click", () => {
-  if (selectBlock) selectBlock.style.transform = "scale(1)";
-  selectBlockActive = false;
-  selectBlock = null;
-});
-
-let matrix = trackCanvas();
-
-function trackCanvas() {
-  const matrix = Array.from({ length: 8 }, () => Array(8).fill(0));
-  const canvasItems = document.querySelectorAll(".canvas-item");
-
-  // Iterate through the canvas items
-  canvasItems.forEach((canvasItem, index) => {
-    if (canvasItem.classList.contains("active")) {
-      const row = Math.floor(index / 8);
-      const col = index % 8;
-      matrix[row][col] = 1;
-    }
-  });
-
-  return matrix;
 }
 
-canvas.addEventListener("click", (event) => {
-  const clickedElement = event.target;
+const canvasMatrix = Array.from({ length: gridSize }, () =>
+  Array(gridSize).fill(0)
+);
 
-  if (clickedElement.classList.contains("canvas-item")) {
-    const index = Array.from(clickedElement.parentElement.children).indexOf(
-      clickedElement
-    );
-    const row = Math.floor(index / 8) + 1;
-    const col = (index % 8) + 1;
+traceCanvasToMatrix();
 
-    let position = [row - 1, col - 1];
+canvas.addEventListener("click", handleCanvasClick);
 
-    const updatedMatrix = updateMatrix(
-      matrix,
-      JSON.parse(dataMatrix),
-      position[0],
-      position[1]
-    );
-    updateCanvas(updatedMatrix);
+function handleCanvasClick(event) {
+  const clickedItem = event.target;
 
-    if (selectedBlockCount >= maxSelectedBlocks) {
-      // Generate another set of blocks when the maximum is reached
-      generateBlock(blocksElem);
-      getCanvasItemWidth();
-      selectedBlockCount = 0; // Reset the counter
-    }
-    matrix = trackCanvas();
-  }
-});
+  if (clickedItem.classList.contains("canvas-item")) {
+    const index = Array.from(canvasItems).indexOf(clickedItem);
+    const row = Math.floor(index / gridSize);
+    const col = index % gridSize;
 
-function updateCanvas(matrix) {
-  const canvasItems = document.querySelectorAll(".canvas-item");
-
-  canvasItems.forEach((canvasItem, index) => {
-    if (matrix[Math.floor(index / 8)][index % 8] === 1) {
-      canvasItem.classList.add("active");
-      canvasItem.classList.add(blockColor);
-    } else {
-      canvasItem.classList.remove("active");
-      canvasItem.classList.remove(blockColor);
-    }
-  });
-}
-
-function updateMatrix(originalMatrix, subMatrix, row, col) {
-  const updatedMatrix = [];
-
-  for (let i = 0; i < originalMatrix.length; i++) {
-    updatedMatrix.push([...originalMatrix[i]]);
-  }
-
-  for (let i = 0; i < subMatrix.length; i++) {
-    for (let j = 0; j < subMatrix[i].length; j++) {
-      const newRow = row + i;
-      const newCol = col + j;
-
-      if (
-        newRow >= 0 &&
-        newRow < updatedMatrix.length &&
-        newCol >= 0 &&
-        newCol < updatedMatrix[0].length
-      ) {
-        updatedMatrix[newRow][newCol] = subMatrix[i][j];
+    if (selectedMatrix) {
+      if (canPlaceMatrix(row, col, selectedMatrix)) {
+        if (selectedBlock) {
+          selectedBlock.classList.remove("block-active");
+          selectedBlock.classList.add("block-used");
+        }
+        placeMatrix(row, col);
+        resetSelected();
+        traceCanvasToMatrix();
       }
     }
   }
 
-  return updatedMatrix;
+  updateCanvasHTML();
+  updateScore();
+  updateCanvasHTML();
+  clearRowAndCol();
+  trackBlocks();
+
+  if (!checkIfMatrixesFit()) {
+    gameover();
+  }
+}
+
+function gameover() {
+  localStorage.setItem("userscore", score);
+
+  setTimeout(() => {
+    window.location.href = "../gameover/index.html";
+  }, 500);
+}
+
+function resetSelected() {
+  selectedBlock = null;
+  selectedMatrix = null;
+}
+
+function traceCanvasToMatrix() {
+  canvasItems.forEach((canvasItem, index) => {
+    if (canvasItem.classList.contains("active")) {
+      const row = Math.floor(index / gridSize);
+      const col = index % gridSize;
+      canvasMatrix[row][col] = 1;
+    }
+  });
+}
+
+function canPlaceMatrix(startRow, startCol, matrix) {
+  const matrixSize = matrix.length;
+  const matrixCols = matrix[0].length;
+
+  // Check if the entire selectedMatrix can fit within the canvas boundaries
+  if (startRow + matrixSize > gridSize || startCol + matrixCols > gridSize) {
+    return false;
+  }
+
+  for (let row = 0; row < matrixSize; row++) {
+    for (let col = 0; col < matrixCols; col++) {
+      if (
+        (canvasMatrix[startRow + row][startCol + col] !== 0 &&
+          matrix[row][col] === 1) ||
+        startRow + row >= gridSize ||
+        startCol + col >= gridSize
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function placeMatrix(startRow, startCol) {
+  const matrixSize = selectedMatrix.length;
+  const matrixCols = selectedMatrix[0].length;
+
+  for (let row = 0; row < matrixSize; row++) {
+    for (let col = 0; col < matrixCols; col++) {
+      if (selectedMatrix[row][col] === 1) {
+        canvasMatrix[startRow + row][startCol + col] = 1;
+        updateCanvasItemColor(startRow + row, startCol + col);
+      }
+    }
+  }
+}
+
+function updateCanvasItemColor(row, col) {
+  const index = row * gridSize + col;
+  const canvasItem = canvasItems[index];
+
+  canvasItem.classList.add(selectedBlockColor);
+}
+
+function updateCanvasHTML() {
+  canvasItems.forEach((canvasItem, index) => {
+    const row = Math.floor(index / gridSize);
+    const col = index % gridSize;
+
+    if (canvasMatrix[row][col] === 1) {
+      canvasItem.classList.add("active");
+    }
+    if (canvasMatrix[row][col] === -1) {
+      canvasItem.classList.remove("active");
+      const classesToRemove = ["Red", "Orange", "Yellow", "Green", "Blue"];
+      canvasItem.classList.remove(...classesToRemove);
+    }
+  });
+}
+
+function updateScore() {
+  let noFilledRowAndCol = checkRowAndCol();
+
+  let times = noFilledRowAndCol.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+
+  if (times >= 4) score = score + 90;
+  else if (times == 3) score = score + 60;
+  else if (times == 2) score = score + 30;
+  else if (times == 1) score = score + 10;
+  scoreValue.innerText = score;
+}
+
+function clearRowAndCol() {
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      if (canvasMatrix[row][col] === -1) {
+        canvasMatrix[row][col] = 0;
+      }
+    }
+  }
+}
+
+function checkRowAndCol() {
+  let filledRows = [];
+  let filledColumns = [];
+
+  // Check rows
+  for (let row = 0; row < gridSize; row++) {
+    let isRowFilled = true;
+    for (let col = 0; col < gridSize; col++) {
+      if (canvasMatrix[row][col] !== 1) {
+        isRowFilled = false;
+        break;
+      }
+    }
+    if (isRowFilled) {
+      filledRows.push(row);
+    }
+  }
+
+  // Check columns
+  for (let col = 0; col < gridSize; col++) {
+    let isColumnFilled = true;
+    for (let row = 0; row < gridSize; row++) {
+      if (canvasMatrix[row][col] !== 1) {
+        isColumnFilled = false;
+        break;
+      }
+    }
+    if (isColumnFilled) {
+      filledColumns.push(col);
+    }
+  }
+
+  // Update rows to -1
+  filledRows.forEach((row) => {
+    for (let col = 0; col < gridSize; col++) {
+      if (canvasMatrix[row][col] === 1) {
+        canvasMatrix[row][col] = -1;
+      }
+    }
+  });
+
+  // Update columns to -1
+  filledColumns.forEach((col) => {
+    for (let row = 0; row < gridSize; row++) {
+      if (canvasMatrix[row][col] === 1) {
+        canvasMatrix[row][col] = -1;
+      }
+    }
+  });
+
+  return [filledColumns.length, filledRows.length];
+}
+
+function checkIfMatrixesFit() {
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      if (canvasMatrix[row][col] === 0) {
+        for (let i = 0; i < generatedBlockMatrices.length; i++) {
+          const matrix = generatedBlockMatrices[i];
+
+          if (canPlaceMatrix(row, col, matrix)) {
+            return true; // If at least one matrix fits, return true
+          }
+        }
+      }
+    }
+  }
+
+  return false; // No matrix fits, return false
 }

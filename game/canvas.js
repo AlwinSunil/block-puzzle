@@ -2,7 +2,7 @@ const canvas = document.querySelector(".canvas");
 const highScoreElem = document.querySelector(".highscore-value");
 
 // Data retrieved from local storage
-const gridSize = localStorage.getItem("grid");
+const gridSize = parseInt(localStorage.getItem("grid"));
 const highScore = localStorage.getItem("highscore");
 
 // Updating highscore on UI
@@ -34,6 +34,7 @@ function getCanvasItemWidth() {
 
   const canvasItem = document.querySelector(".canvas-item");
   blockItemSide = canvasItem.offsetWidth;
+  
   blockItemElem.forEach(function (element) {
     element.style.width = `${blockItemSide}px`;
     element.style.height = `${blockItemSide}px`;

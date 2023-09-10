@@ -129,7 +129,7 @@ input[type="submit"]:focus {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     border: 1px solid rgba(255, 255, 255, 0.8);
-    max-width: 25rem;
+    max-width: 22rem;
     margin: 1rem;
     width: -webkit-fill-available;
     box-shadow: 0px 0px 40px 0px rgba(255, 255, 255, 0.30) inset;
@@ -143,6 +143,11 @@ input[type="submit"]:focus {
     justify-content: center;
     align-items: center;
     margin: -1px;
+    transition: all 0.2s ease;
+}
+
+.active {
+    border: 1px solid rgba(255, 255, 255, 1);
 }
 
 .blocks {
@@ -159,6 +164,19 @@ input[type="submit"]:focus {
 .block {
     display: grid;
     transition: 0.1s ease-in-out;
+}
+
+.block-used {
+    filter: grayscale(1) !important;
+}
+
+.block:hover {
+    cursor: pointer;
+}
+
+.block-active {
+    transform: scale(1.25);
+    filter: drop-shadow(0px 0px 8px var(--White-shadow));
 }
 
 .block-item {
