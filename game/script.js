@@ -16,7 +16,8 @@ const blockShape = [
   [[1]],
   [[1, 1]],
   [[1, 1], [1]],
-  [[1, 1, 1], [1]],
+  [[1], [1, 1]],
+  [([1, 1, 1], [1])],
   [[1, 1, 1]],
   [[1], [1], [1]],
   [[1, 1, 1, 1]],
@@ -249,7 +250,15 @@ function canPlaceMatrix(startRow, startCol, matrix) {
 
 function placeMatrix(startRow, startCol) {
   const matrixSize = selectedMatrix.length;
-  const matrixCols = selectedMatrix[0].length;
+
+  let matrixCols = 0;
+
+  for (const row of selectedMatrix) {
+    const rowLength = row.length;
+    if (rowLength > matrixCols) {
+      matrixCols = rowLength;
+    }
+  }
 
   for (let row = 0; row < matrixSize; row++) {
     for (let col = 0; col < matrixCols; col++) {
