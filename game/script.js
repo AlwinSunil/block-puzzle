@@ -8,10 +8,9 @@ const scoreValue = document.querySelector(".userscore-value");
 const canvasItems = canvas.querySelectorAll(".canvas-item");
 
 // Global variables
-let blockItemSide = 0;
-let score = 0;
+let SCORE = 0;
 
-scoreValue.innerText = score;
+scoreValue.innerText = SCORE;
 
 const blockShape = [
   [[1]],
@@ -39,12 +38,12 @@ userDetailsForm.onsubmit = function (event) {
 };
 
 function handleUserDetailsFormSubmit() {
-  const username = usernameInput.value.trim();
-  const nickname = nicknameInput.value.trim();
+  const USER_NAME = usernameInput.value.trim();
+  const NICK_NAME = nicknameInput.value.trim();
 
-  if (username !== "" && nickname !== "") {
-    localStorage.setItem("username", username);
-    localStorage.setItem("nickname", nickname);
+  if (USER_NAME !== "" && NICK_NAME !== "") {
+    localStorage.setItem("username", USER_NAME);
+    localStorage.setItem("nickname", NICK_NAME);
     startGame();
   } else alert("Please enter valid username and nickname.");
 }
@@ -202,7 +201,7 @@ function handleCanvasClick(event) {
 }
 
 function gameover() {
-  localStorage.setItem("userscore", score);
+  localStorage.setItem("userscore", SCORE);
   setTimeout(() => {
     window.location.href = "../gameover/index.html";
   }, 500);
@@ -295,11 +294,11 @@ function updateScore() {
 
   if (times) pointScoredSound();
 
-  if (times >= 4) score = score + 90;
-  else if (times == 3) score = score + 60;
-  else if (times == 2) score = score + 30;
-  else if (times == 1) score = score + 10;
-  scoreValue.innerText = score;
+  if (times >= 4) SCORE = SCORE + 90;
+  else if (times == 3) SCORE = SCORE + 60;
+  else if (times == 2) SCORE = SCORE + 30;
+  else if (times == 1) SCORE = SCORE + 10;
+  scoreValue.innerText = SCORE;
 }
 
 function clearRowAndCol() {

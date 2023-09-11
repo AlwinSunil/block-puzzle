@@ -1,9 +1,10 @@
 const canvas = document.querySelector(".canvas");
 const highScoreElem = document.querySelector(".highscore-value");
 
-// Constants from local storage
+// Contants & Variables from local storage
 const GRID_SIZE = parseInt(localStorage.getItem("grid"));
 const HIGH_SCORE = localStorage.getItem("highscore");
+let BLOCK_ITEM_SIDE = 0;
 
 // Set high score on UI
 highScoreElem.innerText = HIGH_SCORE;
@@ -52,11 +53,11 @@ function adjustCanvasItemSize() {
   blockItemElem = Array.from(blockItemElem);
 
   const canvasItem = document.querySelector(".canvas-item");
-  blockItemSide = canvasItem.offsetWidth;
+  BLOCK_ITEM_SIDE = canvasItem.offsetWidth;
 
   blockItemElem.forEach((element) => {
-    element.style.width = `${blockItemSide}px`;
-    element.style.height = `${blockItemSide}px`;
+    element.style.width = `${BLOCK_ITEM_SIDE}px`;
+    element.style.height = `${BLOCK_ITEM_SIDE}px`;
   });
 }
 

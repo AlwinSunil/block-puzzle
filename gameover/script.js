@@ -6,14 +6,14 @@ const highScoreValue = document.querySelector(".highscore span");
 const playAgainBtn = document.querySelector(".playagain");
 
 // Retrieving data from localstorage
-const userScore = localStorage.getItem("userscore");
-let HIGH_SCORE = localStorage.getItem("highscore");
+const USER_SCORE = parseInt(localStorage.getItem("userscore"));
+let HIGH_SCORE = parseInt(localStorage.getItem("highscore"));
 
-userScoreValue.innerText = userScore;
+userScoreValue.innerText = USER_SCORE;
 highScoreValue.innerText = `🏆${HIGH_SCORE}`;
 
-if (userScore > HIGH_SCORE) {
-  localStorage.setItem("highscore", userScore);
+if (USER_SCORE > HIGH_SCORE) {
+  localStorage.setItem("highscore", USER_SCORE);
   HIGH_SCORE = localStorage.getItem("highscore");
   highScoreValue.innerText = `🏆${HIGH_SCORE}`;
   gameOverStatus.innerHTML = "NEW HIGH <br> SCORE";
