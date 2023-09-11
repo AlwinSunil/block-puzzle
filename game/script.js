@@ -5,7 +5,6 @@ const infoPage = document.querySelector(".intro");
 const gamePage = document.querySelector(".game");
 const blocksElem = document.querySelector(".blocks");
 const scoreValue = document.querySelector(".userscore-value");
-
 const canvasItems = canvas.querySelectorAll(".canvas-item");
 
 // Global variables
@@ -55,7 +54,7 @@ function startGame() {
   infoPage.remove();
 
   generateBlock(blocksElem);
-  getCanvasItemWidth(); // Function definition in canvas.js
+  adjustCanvasItemSize(); // Function definition in canvas.js
 }
 
 function getRandomInt(min, max) {
@@ -111,7 +110,7 @@ function generateBlock(blockElem) {
     createBlockElems(block, resultMatrix, colors[colorIndex]);
   }
 
-  getCanvasItemWidth();
+  adjustCanvasItemSize();
 }
 
 function createBlockElems(block, resultMatrix, color) {
@@ -143,6 +142,7 @@ function handleBlockClick(event) {
   const clickedBlock = event.target.parentElement;
 
   if (!clickedBlock.classList.contains("block")) return;
+  blockClickSound();
 
   if (clickedBlock === selectedBlock) {
     clickedBlock.classList.remove("block-active");
@@ -159,8 +159,8 @@ function handleBlockClick(event) {
   }
 }
 
-const canvasMatrix = Array.from({ length: gridSize }, () =>
-  Array(gridSize).fill(0)
+const canvasMatrix = Array.from({ length: GRID_SIZE }, () =>
+  Array(GRID_SIZE).fill(0)
 );
 
 traceCanvasToMatrix();
@@ -172,10 +172,12 @@ function handleCanvasClick(event) {
 
   if (clickedItem.classList.contains("canvas-item")) {
     const index = Array.from(canvasItems).indexOf(clickedItem);
-    const row = Math.floor(index / gridSize);
-    const col = index % gridSize;
+    const row = Math.floor(index / GRID_SIZE);
+    const col = index % GRID_SIZE;
 
     if (selectedMatrix) {
+      canvasClickSound();
+
       if (canPlaceMatrix(row, col, selectedMatrix)) {
         if (selectedBlock) {
           selectedBlock.classList.remove("block-active");
@@ -201,7 +203,6 @@ function handleCanvasClick(event) {
 
 function gameover() {
   localStorage.setItem("userscore", score);
-
   setTimeout(() => {
     window.location.href = "../gameover/index.html";
   }, 500);
@@ -215,8 +216,8 @@ function resetSelected() {
 function traceCanvasToMatrix() {
   canvasItems.forEach((canvasItem, index) => {
     if (canvasItem.classList.contains("active")) {
-      const row = Math.floor(index / gridSize);
-      const col = index % gridSize;
+      const row = Math.floor(index / GRID_SIZE);
+      const col = index % GRID_SIZE;
       canvasMatrix[row][col] = 1;
     }
   });
@@ -227,7 +228,7 @@ function canPlaceMatrix(startRow, startCol, matrix) {
   const matrixCols = matrix[0].length;
 
   // Check if the entire selectedMatrix can fit within the canvas boundaries
-  if (startRow + matrixSize > gridSize || startCol + matrixCols > gridSize) {
+  if (startRow + matrixSize > GRID_SIZE || startCol + matrixCols > GRID_SIZE) {
     return false;
   }
 
@@ -236,8 +237,8 @@ function canPlaceMatrix(startRow, startCol, matrix) {
       if (
         (canvasMatrix[startRow + row][startCol + col] !== 0 &&
           matrix[row][col] === 1) ||
-        startRow + row >= gridSize ||
-        startCol + col >= gridSize
+        startRow + row >= GRID_SIZE ||
+        startCol + col >= GRID_SIZE
       ) {
         return false;
       }
@@ -262,7 +263,7 @@ function placeMatrix(startRow, startCol) {
 }
 
 function updateCanvasItemColor(row, col) {
-  const index = row * gridSize + col;
+  const index = row * GRID_SIZE + col;
   const canvasItem = canvasItems[index];
 
   canvasItem.classList.add(selectedBlockColor);
@@ -270,8 +271,8 @@ function updateCanvasItemColor(row, col) {
 
 function updateCanvasHTML() {
   canvasItems.forEach((canvasItem, index) => {
-    const row = Math.floor(index / gridSize);
-    const col = index % gridSize;
+    const row = Math.floor(index / GRID_SIZE);
+    const col = index % GRID_SIZE;
 
     if (canvasMatrix[row][col] === 1) {
       canvasItem.classList.add("active");
@@ -292,6 +293,8 @@ function updateScore() {
     0
   );
 
+  if (times) pointScoredSound();
+
   if (times >= 4) score = score + 90;
   else if (times == 3) score = score + 60;
   else if (times == 2) score = score + 30;
@@ -300,8 +303,8 @@ function updateScore() {
 }
 
 function clearRowAndCol() {
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
       if (canvasMatrix[row][col] === -1) {
         canvasMatrix[row][col] = 0;
       }
@@ -314,9 +317,9 @@ function checkRowAndCol() {
   let filledColumns = [];
 
   // Check rows
-  for (let row = 0; row < gridSize; row++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
     let isRowFilled = true;
-    for (let col = 0; col < gridSize; col++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
       if (canvasMatrix[row][col] !== 1) {
         isRowFilled = false;
         break;
@@ -328,9 +331,9 @@ function checkRowAndCol() {
   }
 
   // Check columns
-  for (let col = 0; col < gridSize; col++) {
+  for (let col = 0; col < GRID_SIZE; col++) {
     let isColumnFilled = true;
-    for (let row = 0; row < gridSize; row++) {
+    for (let row = 0; row < GRID_SIZE; row++) {
       if (canvasMatrix[row][col] !== 1) {
         isColumnFilled = false;
         break;
@@ -343,7 +346,7 @@ function checkRowAndCol() {
 
   // Update rows to -1
   filledRows.forEach((row) => {
-    for (let col = 0; col < gridSize; col++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
       if (canvasMatrix[row][col] === 1) {
         canvasMatrix[row][col] = -1;
       }
@@ -352,7 +355,7 @@ function checkRowAndCol() {
 
   // Update columns to -1
   filledColumns.forEach((col) => {
-    for (let row = 0; row < gridSize; row++) {
+    for (let row = 0; row < GRID_SIZE; row++) {
       if (canvasMatrix[row][col] === 1) {
         canvasMatrix[row][col] = -1;
       }
@@ -363,8 +366,8 @@ function checkRowAndCol() {
 }
 
 function checkIfMatrixesFit() {
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
       if (canvasMatrix[row][col] === 0) {
         for (let i = 0; i < generatedBlockMatrices.length; i++) {
           const matrix = generatedBlockMatrices[i];
