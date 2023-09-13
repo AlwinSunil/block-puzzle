@@ -17,7 +17,7 @@ const blockShape = [
   [[1, 1]],
   [[1, 1], [1]],
   [[1], [1, 1]],
-  [([1, 1, 1], [1])],
+  [[1, 1, 1], [1]],
   [[1, 1, 1]],
   [[1], [1], [1]],
   [[1, 1, 1, 1]],
@@ -85,12 +85,6 @@ function trackBlocks() {
 }
 
 function generateBlock(blockElem) {
-  const previousBlocks = blockElem.querySelectorAll(".block");
-
-  previousBlocks.forEach((block) => {
-    block.remove();
-  });
-
   for (let i = 1; i < 4; i++) {
     const colors = ["Red", "Orange", "Yellow", "Green", "Blue"];
     const colorIndex = getRandomInt(0, 4);
@@ -163,9 +157,8 @@ const canvasMatrix = Array.from({ length: GRID_SIZE }, () =>
   Array(GRID_SIZE).fill(0)
 );
 
-traceCanvasToMatrix();
-
 canvas.addEventListener("click", handleCanvasClick);
+console.log(canvasMatrix);
 
 function handleCanvasClick(event) {
   const clickedItem = event.target;
@@ -185,8 +178,8 @@ function handleCanvasClick(event) {
         }
         placeMatrix(row, col);
         resetSelected();
-        traceCanvasToMatrix();
       }
+      console.log(canvasMatrix);
     }
   }
 
@@ -196,7 +189,7 @@ function handleCanvasClick(event) {
   clearRowAndCol();
   trackBlocks();
 
-  if (!checkIfMatrixesFit()) {
+  if (!checkIfMatricesFit()) {
     gameover();
   }
 }
@@ -213,19 +206,15 @@ function resetSelected() {
   selectedMatrix = null;
 }
 
-function traceCanvasToMatrix() {
-  canvasItems.forEach((canvasItem, index) => {
-    if (canvasItem.classList.contains("active")) {
-      const row = Math.floor(index / GRID_SIZE);
-      const col = index % GRID_SIZE;
-      canvasMatrix[row][col] = 1;
-    }
-  });
-}
-
 function canPlaceMatrix(startRow, startCol, matrix) {
   const matrixSize = matrix.length;
-  const matrixCols = matrix[0].length;
+  let matrixCols = 0;
+
+  for (const row of matrix) {
+    if (row.length > matrixCols) {
+      matrixCols = row.length;
+    }
+  }
 
   // Check if the entire selectedMatrix can fit within the canvas boundaries
   if (startRow + matrixSize > GRID_SIZE || startCol + matrixCols > GRID_SIZE) {
@@ -235,10 +224,8 @@ function canPlaceMatrix(startRow, startCol, matrix) {
   for (let row = 0; row < matrixSize; row++) {
     for (let col = 0; col < matrixCols; col++) {
       if (
-        (canvasMatrix[startRow + row][startCol + col] !== 0 &&
-          matrix[row][col] === 1) ||
-        startRow + row >= GRID_SIZE ||
-        startCol + col >= GRID_SIZE
+        canvasMatrix[startRow + row][startCol + col] !== 0 &&
+        matrix[row][col] === 1
       ) {
         return false;
       }
@@ -250,13 +237,11 @@ function canPlaceMatrix(startRow, startCol, matrix) {
 
 function placeMatrix(startRow, startCol) {
   const matrixSize = selectedMatrix.length;
-
   let matrixCols = 0;
 
   for (const row of selectedMatrix) {
-    const rowLength = row.length;
-    if (rowLength > matrixCols) {
-      matrixCols = rowLength;
+    if (row.length > matrixCols) {
+      matrixCols = row.length;
     }
   }
 
@@ -373,20 +358,21 @@ function checkRowAndCol() {
   return [filledColumns.length, filledRows.length];
 }
 
-function checkIfMatrixesFit() {
-  for (let row = 0; row < GRID_SIZE; row++) {
-    for (let col = 0; col < GRID_SIZE; col++) {
-      if (canvasMatrix[row][col] === 0) {
-        for (let i = 0; i < generatedBlockMatrices.length; i++) {
-          const matrix = generatedBlockMatrices[i];
+function checkIfMatricesFit() {
+  for (let i = 0; i < generatedBlockMatrices.length; i++) {
+    const matrix = generatedBlockMatrices[i];
 
-          if (canPlaceMatrix(row, col, matrix)) {
-            return true; // If at least one matrix fits, return true
-          }
+    for (let row = 0; row < GRID_SIZE; row++) {
+      for (let col = 0; col < GRID_SIZE; col++) {
+        if (canvasMatrix[row][col] === 0 && canPlaceMatrix(row, col, matrix)) {
+          return true;
+        }
+
+        // Checked all positions for this matrix and it doesn't fit anywhere, return false
+        if (row === GRID_SIZE - 1 && col === GRID_SIZE - 1) {
+          return false;
         }
       }
     }
   }
-
-  return false; // No matrix fits, return false
 }

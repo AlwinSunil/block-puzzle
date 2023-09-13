@@ -146,10 +146,6 @@ input[type="submit"]:focus {
     transition: all 0.2s ease;
 }
 
-.active {
-    border: 1px solid rgba(255, 255, 255, 1);
-}
-
 .blocks {
     z-index: 10;
     display: flex;
